@@ -61,5 +61,5 @@ profile*
 *flamegraph*
 
 # generated code
-*/**/*.js
+# */**/*.js
 dist
