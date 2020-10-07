@@ -1,0 +1,28 @@
+{
+  "name": "album_fastify",
+  "version": "1.0.0",
+  "description": "This is the server of album",
+  "main": "app.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "fastify start -l info app.js",
+    "dev": "fastify start -w -l info -P app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^2.18.2",
+    "bcrypt": "^5.0.0",
+    "dotenv": "^8.2.0",
+    "fastify": "^3.5.1",
+    "fastify-autoload": "^3.0.2",
+    "fastify-cli": "^2.3.0",
+    "fastify-plugin": "^2.3.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.10.8"
+  },
+  "devDependencies": {}
+}
