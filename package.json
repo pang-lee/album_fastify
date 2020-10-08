@@ -21,8 +21,10 @@
     "fastify-autoload": "^3.0.2",
     "fastify-cli": "^2.3.0",
     "fastify-plugin": "^2.3.0",
+    "graphql-scalars": "^1.4.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.10.8"
+    "mongoose": "^5.10.8",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {}
 }

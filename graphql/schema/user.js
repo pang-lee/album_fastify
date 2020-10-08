@@ -3,8 +3,14 @@ const UserController = require('../../controller/user_controller')
 
 const typeDefs = gql`
 input loginInput{
-  email:String!,
+  email:String!
   password:String!
+}
+
+input signupInput{
+  username: String!
+  email: String!
+  password: String!
 }
 
 type user{
@@ -14,9 +20,16 @@ type user{
 }
 
 type signup{
-  email: String
-  password: String
-  username: String
+  id: ID!
+  username: String!
+  email: String!
+  password: String!
+  token: String
+}
+
+type login{
+  id: ID!
+  token: String!
 }
 
 extend type Query {
@@ -25,13 +38,13 @@ extend type Query {
 }
 
 extend type Mutation {
-  signup(email: String!, password: String!, username: String!): signup
-  login(input: loginInput!): String
+  signup(input: signupInput!): signup
+  login(input: loginInput!): login
 }
 
 # extend type Mutation {
-#   signup(email: String!, password: String!, username: String!): signup
-#   login(email: String!, password: String!): String
+#   signup(input: signupInput!): String
+#   login(input: loginInput!): String
 # }
 `
 
