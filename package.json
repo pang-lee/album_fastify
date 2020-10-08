@@ -20,6 +20,7 @@
     "fastify": "^3.5.1",
     "fastify-autoload": "^3.0.2",
     "fastify-cli": "^2.3.0",
+    "fastify-nodemailer": "^5.0.0",
     "fastify-plugin": "^2.3.0",
     "graphql-scalars": "^1.4.0",
     "jsonwebtoken": "^8.5.1",

@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid')
 const isAuthenticated = resolverFunction => (parent, args, context) => {
     if (!context.me) return new ForbiddenError('Not logged in.')
     return resolverFunction.apply(null, [parent, args, context])
-  }
+}
 
 const UserController = {
     getAll: async () => await UserModel.find({}),

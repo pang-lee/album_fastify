@@ -9,4 +9,8 @@ module.exports = fp(async function (fastify, opts) {
   fastify.decorate('someSupport', function () {
     return 'hugs'
   })
+
+  fastify.decorate('someSupports', function () {
+    return 'hugs supports'
+  })
 })
