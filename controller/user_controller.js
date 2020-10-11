@@ -1,5 +1,5 @@
 const UserModel = require('../database/model/user_model')
-const { ForbiddenError } = require('apollo-server')
+const { ForbiddenError } = require('apollo-server-fastify')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')

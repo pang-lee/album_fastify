@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server')
+const { gql } = require('apollo-server-fastify')
 const bookSchema = require('./book')
 const userSchema = require('./user')
 

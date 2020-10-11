@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server')
+const { gql } = require('apollo-server-fastify')
 const UserController = require('../../controller/user_controller')
 
 const typeDefs = gql`
