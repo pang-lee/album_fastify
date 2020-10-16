@@ -3,7 +3,6 @@
 require('dotenv').config()
 const path = require('path')
 const AutoLoad = require('fastify-autoload')
-const server = require('./graphql/apollo')
 
 module.exports = async function (fastify, opts) {
   // Place here your custom code!
@@ -25,7 +24,7 @@ module.exports = async function (fastify, opts) {
     options: Object.assign({}, opts)
   })
 
-  fastify.register(server.createHandler())
+  fastify.register(require('./graphql/apollo'))
 
   fastify.register(require('./database/connect'))
 }

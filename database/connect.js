@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-module.exports = async (fastify, opts) => {
+module.exports = async (fastify, opts, next) => {
     mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true, useUnifiedTopology: true })
 
     mongoose.connection.on('connected', function () {    
@@ -14,4 +14,6 @@ module.exports = async (fastify, opts) => {
     mongoose.connection.on('disconnected', function () {    
         console.log('Mongoose connection disconnected')
     })
+
+    next()
 }

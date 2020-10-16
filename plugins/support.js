@@ -2,9 +2,11 @@
 
 const fp = require('fastify-plugin')
 
+const { gql } = require('apollo-server')
+
+
 const nodemailer = require('nodemailer')
 const smtpTransport = require('nodemailer-smtp-transport')
-const connect = require('../database/connect')
 
 
 // the use of fastify-plugin is required to be able
@@ -15,11 +17,29 @@ module.exports = fp(async function (fastify, opts) {
     return 'hugs'
   })
 
-  fastify.decorate('someSupports', function () {
-    return 'hugs supports'
+  fastify.decorate('someSupports', {
+    a: 'hugs supports'
   })
 
-  fastify.decorate('connection', connect)
+  fastify.decorate('index_typeDefs', {
+    gpl:gql`
+      type Query {
+        hello: String
+      }
+    
+      type Mutation {
+        test: Boolean
+      }
+    `})
+
+  fastify.decorate('index_resolvers', {
+    Query: {
+      hello: () => 'world'
+    },
+    Mutation: {
+      test: () => 'test'
+    }
+  })
 
   fastify.decorate('mail', (nodemailer, smtpTransport) => {
     
