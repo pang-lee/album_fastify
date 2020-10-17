@@ -1,5 +1,6 @@
 const { typeDefs, resolvers } = require('./schema/index')
 const { ApolloServer, ForbiddenError } = require('apollo-server')
+const UserModel = require('../database/model/user_model')
 const jwt = require('jsonwebtoken')
 
 module.exports = async (fastify, opts, next) => {
@@ -8,18 +9,17 @@ module.exports = async (fastify, opts, next) => {
   resolvers,
   tracing: true,
   context: async ({ req }) => {
-    console.log(req)
-    if(!req) return null
-    const token = req.headers['x-token']
-    if (token) {
-      try {
-        const me = await jwt.verify(token, process.env.SECRET)
-        return { me }
-      } catch (e) {
-        return new ForbiddenError('Your session expired. Sign in again.')
+    try {
+      if(!req) return null
+      const token = req.headers['x-token']
+      if (token) {
+        const me = jwt.verify(token, process.env.SECRET)
+        return { me, UserModel }        
       }
+    } catch (error) {
+      return new ForbiddenError('Your session expired. Sign in again.')
     }
-    return {}
+    return { UserModel }
   }
 })
         

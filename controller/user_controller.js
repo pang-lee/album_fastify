@@ -1,4 +1,3 @@
-const UserModel = require('../database/model/user_model')
 const { ForbiddenError } = require('apollo-server')
 const helpers = require('../helpers/helper')
 const bcrypt = require('bcrypt')
@@ -6,11 +5,11 @@ const jwt = require('jsonwebtoken')
 const { v4: uuidv4 } = require('uuid')
 
 const UserController = {
-    getAll: async () => await UserModel.find({}),
-    getMe: helpers.isAuthenticated(async(_, args, { me }) => {
+    getAll: async (_, args, { UserModel }) => await UserModel.find({}),
+    getMe: helpers.isAuthenticated(async(_, args, { me, UserModel }) => {
         return await UserModel.findById(me.uid._id)
     }),
-    signUp: async (_, { input }) => {
+    signUp: async (_, { input }, { UserModel }) => {
         try {
             let user = await UserModel.find({ email: input.email })
             if(user.length !== 0) return new ForbiddenError('Email Duplicate')
@@ -22,7 +21,7 @@ const UserController = {
             console.log(e.message)
         }
     },
-    logIn: async (_, { input }) => {
+    logIn: async (_, { input }, { UserModel }) => {
         try {
             let user = await UserModel.find({ email: input.email })
             if(user.length == 0) return new ForbiddenError('Email Not Found')
