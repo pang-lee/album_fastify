@@ -9,7 +9,6 @@ module.exports = {
         return resolverFunction.apply(null, [parent, args, context])
     },
     mail: async (user) => {
-        console.log(user)
         const transporter = nodemailer.createTransport(smtpTransport({
             service: 'gmail',
             host: 'smtp.gmail.com',
@@ -59,6 +58,13 @@ module.exports = {
         return code
     },
     verify: async (code) => {
-
+        try {
+            let find_code = await CodeModel.find({ verify_code: code })
+            console.log(find_code)
+            if(find_code.length == 0) return new ForbiddenError('Not Find Code')
+            return find_code[0]
+        } catch (error) {
+            console.log(error)
+        }
     }
 }

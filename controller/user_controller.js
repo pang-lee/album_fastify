@@ -21,15 +21,21 @@ const UserController = {
             console.log(e.message)
         }
     },
-    logIn: async (_, { input }, { UserModel }) => {
+    verify: async (_, { input }, { UserModel }) => {
         try {
             let user = await UserModel.find({ email: input.email })
             if(user.length == 0) return new ForbiddenError('Email Not Found')
             let passwordCompare = await bcrypt.compare(input.password, user[0].password)
             if(!passwordCompare) return new ForbiddenError('Password Not Same')
-            let code = await helpers.mail(user[0])
-            console.log("This is code from helper ",code)
-            // await helpers.verify(code)
+            return await helpers.mail(user[0])
+        } catch(e) {
+            console.log(e.message)
+        }
+    },
+    logIn: async (_,  { code }, { UserModel }) => {
+        try {
+            let verify_info = await helpers.verify(code)
+            let user = await UserModel.find({ email: verify_info.email })
             let sign = { token: jwt.sign({ uid: user[0] }, process.env.SECRET, { expiresIn: '1d' }) }
             return Object.assign(user[0], sign)
         } catch(e) {

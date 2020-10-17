@@ -39,7 +39,8 @@ const typeDefs = gql`
   
   extend type Mutation {
     signup(input: signupInput!): signup
-    login(input: loginInput!): login
+    verify(input: loginInput!): String
+    login(code: String): login
   }
 `
 
@@ -50,6 +51,7 @@ const resolvers = {
   },
   Mutation: {
     signup: UserController.signUp,
+    verify: UserController.verify,
     login: UserController.logIn
   }
 }
