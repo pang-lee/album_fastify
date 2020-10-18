@@ -60,8 +60,7 @@ module.exports = {
     verify: async (code) => {
         try {
             let find_code = await CodeModel.find({ verify_code: code })
-            console.log(find_code)
-            if(find_code.length == 0) return new ForbiddenError('Not Find Code')
+            if(find_code.length == 0) return 'Code Not Found Or Typo'
             return find_code[0]
         } catch (error) {
             console.log(error)

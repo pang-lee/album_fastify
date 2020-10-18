@@ -40,7 +40,7 @@ const typeDefs = gql`
   extend type Mutation {
     signup(input: signupInput!): signup
     verify(input: loginInput!): String
-    login(code: String): login
+    login(code: String!): login
   }
 `
 

@@ -35,9 +35,11 @@ const UserController = {
     logIn: async (_,  { code }, { UserModel }) => {
         try {
             let verify_info = await helpers.verify(code)
-            let user = await UserModel.find({ email: verify_info.email })
-            let sign = { token: jwt.sign({ uid: user[0] }, process.env.SECRET, { expiresIn: '1d' }) }
-            return Object.assign(user[0], sign)
+            if(verify_info !== 'Code Not Found Or Typo'){
+                let user = await UserModel.find({ email: verify_info.email })
+                let sign = { token: jwt.sign({ uid: user[0] }, process.env.SECRET, { expiresIn: '1d' }) }
+                return Object.assign(user[0], sign)
+            } else return new ForbiddenError(verify_info)
         } catch(e) {
             console.log(e.message)
         }
