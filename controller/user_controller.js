@@ -1,40 +1,49 @@
 const { ForbiddenError } = require('apollo-server')
+const UserModel = require('../database/model/user_model')
 const helpers = require('../helpers/helper')
-const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const { v4: uuidv4 } = require('uuid')
+const bcrypt = require('bcrypt')
 
 const UserController = {
-    getAll: async (_, args, { UserModel }) => await UserModel.find({}),
-    getMe: helpers.isAuthenticated(async(_, args, { me, UserModel }) => {
+    getAll: async (_, args) => await UserModel.find({}),
+    getMe: helpers.isAuthenticated(async(_, args, { me }) => {
         return await UserModel.findById(me.uid._id)
     }),
-    signUp: async (_, { input }, { UserModel }) => {
+    verify_signup: async(_, { input }) => {
         try {
             let user = await UserModel.find({ email: input.email })
             if(user.length !== 0) return new ForbiddenError('Email Duplicate')
-            let encrypt = await bcrypt.hash(input.password, Number(process.env.SALT_ROUNDS))
-            let create = await UserModel.create({ id: uuidv4(), email: input.email, password: encrypt, username: input.username })
-            let sign = { token: jwt.sign({ uid: `${input.email}` }, process.env.SECRET, { expiresIn: '1d' }) }
-            return Object.assign(create, sign)
+            return await helpers.mail(input, 'signup')
+        } catch (error) {
+            console.log(error)
+        }
+    },
+    signUp: async (_, { code }) => {
+        try {
+            let verify_info = await helpers.verify(code, 'signup')
+            if(verify_info !== 'Code Not Found Or Typo'){
+                let create = await UserModel.create({ id: verify_info.id, email: verify_info.email, password: verify_info.password, username: verify_info.username})
+                let sign = { token: jwt.sign({ uid: `${verify_info.email}` }, process.env.SECRET, { expiresIn: '1d' }) }
+                return Object.assign(create, sign)
+            } else return new ForbiddenError(verify_info)
         } catch(e) {
             console.log(e.message)
         }
     },
-    verify: async (_, { input }, { UserModel }) => {
+    verify_login: async (_, { input }) => {
         try {
             let user = await UserModel.find({ email: input.email })
             if(user.length == 0) return new ForbiddenError('Email Not Found')
             let passwordCompare = await bcrypt.compare(input.password, user[0].password)
             if(!passwordCompare) return new ForbiddenError('Password Not Same')
-            return await helpers.mail(user[0])
+            return await helpers.mail(user[0], 'login')
         } catch(e) {
             console.log(e.message)
         }
     },
-    logIn: async (_,  { code }, { UserModel }) => {
+    logIn: async (_,  { code }) => {
         try {
-            let verify_info = await helpers.verify(code)
+            let verify_info = await helpers.verify(code, 'login')
             if(verify_info !== 'Code Not Found Or Typo'){
                 let user = await UserModel.find({ email: verify_info.email })
                 let sign = { token: jwt.sign({ uid: user[0] }, process.env.SECRET, { expiresIn: '1d' }) }

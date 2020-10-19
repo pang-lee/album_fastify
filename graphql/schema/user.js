@@ -24,7 +24,7 @@ const typeDefs = gql`
     username: String!
     email: String!
     password: String!
-    token: String
+    token: String!
   }
   
   type login{
@@ -38,9 +38,12 @@ const typeDefs = gql`
   }
   
   extend type Mutation {
-    signup(input: signupInput!): signup
-    verify(input: loginInput!): String
+    # signup(input: signupInput!): signup
+    verify_login(input: loginInput!): String
+    verify_signup(input: signupInput!): String
     login(code: String!): login
+    signup(code: String!): signup
+
   }
 `
 
@@ -51,7 +54,8 @@ const resolvers = {
   },
   Mutation: {
     signup: UserController.signUp,
-    verify: UserController.verify,
+    verify_login: UserController.verify_login,
+    verify_signup:UserController.verify_signup,
     login: UserController.logIn
   }
 }
