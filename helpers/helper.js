@@ -23,21 +23,22 @@ module.exports = {
 
         const generate_code = async () => {
             try {
-               let random_code = ''
+                let random_code = ''
                 for(let i= 0;i<6;i++){
                     random_code += parseInt(Math.random()*10)
                 }
 
                 if(status == 'signup'){
                     let encrypt = await bcrypt.hash(user.password, Number(process.env.SALT_ROUNDS))
-                    await SignUpCodeModel.create({ verify_code: random_code, id: uuidv4(), email: user.email, password: encrypt, username: user.username })
+                    let userId = uuidv4()
+                    await SignUpCodeModel.create({ verify_code: random_code, id: userId, email: user.email, password: encrypt, username: user.username })
                     setTimeout(async ()=>{
-                        await SignUpCodeModel.deleteMany({ verify_code: random_code, id: user.id, email: user.email, password: user.password, username: user.username })
+                        await SignUpCodeModel.deleteOne({ verify_code: random_code })
                     }, 1000*60*2)
                 }else if(status == 'login'){
                     await LogInCodeModel.create({ verify_code: random_code, email: user.email })
                     setTimeout(async ()=>{
-                        await LogInCodeModel.deleteMany({ verify_code: random_code, email: user.email })
+                        await LogInCodeModel.deleteOne({ verify_code: random_code })
                     }, 1000*60*2)
                 }
 
@@ -74,13 +75,14 @@ module.exports = {
             let find_code
             if(status == 'login') {
                 find_code = await LogInCodeModel.find({ verify_code: code })
-                await LogInCodeModel.deleteMany({ verify_code: find_code[0].random_code, email: find_code[0].email })
+                if(find_code.length == 0) return 'Code Not Found Or Typo'
+                await LogInCodeModel.deleteOne({ verify_code: find_code[0].verify_code, email: find_code[0].email })
             }
-            else if(status == 'signup') find_code = await SignUpCodeModel.find({ verify_code: code })
-
-            // if(status == 'login') find_code = await LogInCodeModel.find({ verify_code: code })
-            // else if(status == 'signup') find_code = await SignUpCodeModel.find({ verify_code: code })
-            if(find_code.length == 0) return 'Code Not Found Or Typo'
+            else if(status == 'signup') {
+                find_code = await SignUpCodeModel.find({ verify_code: code })
+                if(find_code.length == 0) return 'Code Not Found Or Typo'
+                await SignUpCodeModel.deleteOne({ verify_code: find_code[0].verify_code, id: find_code[0].id, email: find_code[0].email, password: find_code[0].password, username: find_code[0].username })
+            }
             return find_code[0]
         } catch (error) {
             console.log(error)
