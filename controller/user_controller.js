@@ -52,6 +52,18 @@ const UserController = {
         } catch(e) {
             console.log(e.message)
         }
+    },
+    forget: async(_, { email }) => {
+        try {
+            let user = await UserModel.find({ email: email })
+            if(user.length == 0) return new ForbiddenError('Email Not Found')
+            let reset = await helpers.mail(user[0], 'forget')
+            let encrypt = await bcrypt.hash(reset, Number(process.env.SALT_ROUNDS))
+            await UserModel.findByIdAndUpdate(user[0]._id, { password: encrypt },  { useFindAndModify: false })
+            return encrypt
+        } catch (error) {
+            console.log(error)
+        }
     }
 }
 

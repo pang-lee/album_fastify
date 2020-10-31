@@ -28,47 +28,86 @@ module.exports = {
                     random_code += parseInt(Math.random()*10)
                 }
 
-                if(status == 'signup'){
+                 if(status == 'signup'){
                     let encrypt = await bcrypt.hash(user.password, Number(process.env.SALT_ROUNDS))
-                    let userId = uuidv4()
-                    await SignUpCodeModel.create({ verify_code: random_code, id: userId, email: user.email, password: encrypt, username: user.username })
+                    await SignUpCodeModel.create({ verify_code: random_code, id: uuidv4(), email: user.email, password: encrypt, username: user.username })
                     setTimeout(async ()=>{
                         await SignUpCodeModel.deleteOne({ verify_code: random_code })
                     }, 1000*60*2)
-                }else if(status == 'login'){
+                } else if(status == 'login'){
                     await LogInCodeModel.create({ verify_code: random_code, email: user.email })
                     setTimeout(async ()=>{
                         await LogInCodeModel.deleteOne({ verify_code: random_code })
                     }, 1000*60*2)
                 }
 
-                return random_code
+                 return random_code
             } catch (error) {
                 console.log(error)
             }
         }
 
-        let code = await generate_code()
+        const generate_password = async () => {
+            try {
+                let random_number = Math.floor(Math.random()*99999)
+                let text = ''
+                let possible = "abcdefghijklmnopqrstuvwxyz"
+                
+                for (let i = 0; i < 4; i++) text += possible.charAt(Math.floor(Math.random() * possible.length))
+                console.log("This is the password", text + random_number)
+                return text + random_number
 
-        transporter.sendMail({
-            from: 'leepang8834@gmail.com.tw',
-            to: user.email,
-            subject: 'Verify Your Identity',
-            html: `
-                <p>Hello! ${user.username}</p>
-                <p>Your Verification Code Is：<strong style="color: #ff4e2a;">${code}</strong></p>
-                <p>*** IT ONLY WORK WITHIN 2 MINUTES!! ***</p>
-            `
-        }, (error, info) => {
-            if (error) {
+            } catch (error) {
                 console.log(error)
-                transporter.close()
-            } else {     
-                console.log('Email sent: ' + info.response)
             }
-        })
-        
-        return code
+        }
+
+        if(status == 'forget'){
+            let password = await generate_password()
+
+            transporter.sendMail({
+                from: 'leepang8834@gmail.com.tw',
+                to: user.email,
+                subject: 'Forget Your Password?',
+                html: `
+                    <p>Hello! ${user.username}</p>
+                    <p>Your Reset Password Code Is：<strong style="color: #ff4e2a;">${password}</strong></p>
+                    <p>*** PLEASE REMEMBER TO CHANGE YOUR PASSWORD AFTER YOU LOGIN !! ***</p>
+                `
+            }, (error, info) => {
+                if (error) {
+                    console.log(error)
+                    transporter.close()
+                } else {     
+                    console.log('Email sent: ' + info.response)
+                }
+            })
+
+            return password
+        } else {
+            let code = await generate_code()
+
+            transporter.sendMail({
+                from: 'leepang8834@gmail.com.tw',
+                to: user.email,
+                subject: 'Verify Your Identity',
+                html: `
+                    <p>Hello! ${user.username}</p>
+                    <p>Your Verification Code Is：<strong style="color: #ff4e2a;">${code}</strong></p>
+                    <p>*** IT ONLY WORK WITHIN 2 MINUTES !! ***</p>
+                `
+            }, (error, info) => {
+                if (error) {
+                    console.log(error)
+                    transporter.close()
+                } else {     
+                    console.log('Email sent: ' + info.response)
+                }
+            })
+
+            return code
+        }
+
     },
     verify: async (code, status) => {
         try {

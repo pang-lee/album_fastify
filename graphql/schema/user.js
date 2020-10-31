@@ -42,7 +42,7 @@ const typeDefs = gql`
     verify_signup(input: signupInput!): String
     login(code: String!): login
     signup(code: String!): signup
-
+    forget(email: String!): String
   }
 `
 
@@ -52,10 +52,11 @@ const resolvers = {
     getUser: UserController.getMe
   },
   Mutation: {
-    signup: UserController.signUp,
     verify_login: UserController.verify_login,
-    verify_signup:UserController.verify_signup,
-    login: UserController.logIn
+    verify_signup: UserController.verify_signup,
+    login: UserController.logIn,
+    signup: UserController.signUp,
+    forget: UserController.forget,
   }
 }
 
