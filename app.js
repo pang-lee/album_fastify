@@ -27,4 +27,11 @@ module.exports = async function (fastify, opts) {
   fastify.register(require('./graphql/apollo'))
 
   fastify.register(require('./database/connect'))
+
+  fastify.register(require('fastify-cors'), {
+    origin: 'http://localhost:3000',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  })
 }

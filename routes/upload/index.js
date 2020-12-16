@@ -2,6 +2,10 @@
 
 module.exports = async function (fastify, opts) {
   fastify.get('/', async function (request, reply) {
-    return `this is an example ${fastify.someSupport()}`
+    return 'hello'
+  })
+
+  fastify.post('/', async(request, reply) =>{
+    console.log(request.param)
   })
 }
